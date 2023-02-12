@@ -1,7 +1,3 @@
-<?php
-session_start();
-?>
-
 <header class="fixed-top">
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
         <div class="container-fluid">
@@ -18,9 +14,20 @@ session_start();
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="about.php">About</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="all-posts.php">Blog</a>
+                    </li>
                 </ul>
+
+
                 <div class="d-flex">
                     <ul class="navbar-nav">
+                        <?php if (isset($_SESSION['userId'])) { ?>
+                            <li class="nav-item me-5 ">
+                                <div class="nav-link active" aria-current="page" href="all-posts.php">Hi <?= $_SESSION['userName'] ?> </div>
+                            </li>
+                        <?php } ?>
+
                         <li class="nav-item">
                             <a class="nav-link active" href="signup.php">Sign Up</a>
                         </li>
