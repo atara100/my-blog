@@ -12,7 +12,7 @@ $error = '';
 $conn = new Database();
 $queryChckEmail = 'SELECT users.email FROM users';
 $resultCheckEmail = $conn->dbQuery($queryChckEmail, []);
-var_dump($resultCheckEmail);
+
 
 if (isset($_POST['submit']) && !empty($_SESSION['token'])) {
 
@@ -30,9 +30,11 @@ if (isset($_POST['submit']) && !empty($_SESSION['token'])) {
             throw new Exception('Invalid email address');
         }
 
-        // if (in_array($email, $resultCheckEmail)) {
-        //     throw new Exception('this email is already in use');
-        // }
+        foreach ($resultCheckEmail as $checkEmail) {
+            if ($checkEmail['email'] === $email) {
+                throw new Exception('User is already exists, try with enother email');
+            }
+        }
 
         $uppercase = preg_match('@[A-Z]@', $password);
         $lowercase = preg_match('@[a-z]@', $password);
@@ -66,7 +68,6 @@ if (isset($_POST['submit']) && !empty($_SESSION['token'])) {
             $upload_file = UPLOAD_DIR . date('Y.m.d.H.i.s') . '-' . basename($image_field['name']);
 
             if (move_uploaded_file($image_field['tmp_name'], $upload_file)) {
-                // $conn = new Database();
                 $hash = password_hash($password, PASSWORD_DEFAULT);
 
                 $conn->dbQuery(
@@ -77,7 +78,7 @@ if (isset($_POST['submit']) && !empty($_SESSION['token'])) {
                 if ($conn->affectedCount() === 0) {
                     throw new Exception('Error. Check your fileds input...');
                 }
-                //its better safe move the user to logi page then move him to the posts page...
+                //Its better safe move the user to logi page then move him to the posts page...
                 header('location:login.php');
             } else {
                 throw new Exception("Upload failed. Check permission and path of upload folder.");
@@ -91,7 +92,8 @@ if (isset($_POST['submit']) && !empty($_SESSION['token'])) {
 include './include/header.php';
 ?>
 
-<h2 class="my-3">Sign Up</h2>
+<h2 class="my-3 ">Sign Up</h2>
+<h2 class="my-3 mt-5">Sign Up</h2>
 
 <form action="signup.php" method="post" enctype="multipart/form-data" class="p-4 form text-start">
     <div class="mb-3">
