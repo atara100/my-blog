@@ -35,7 +35,7 @@ if (isset($_SESSION['userId'])) {
 ?>
 
 <?php
-$query = 'SELECT posts.id, posts.title, posts.user_id, posts.last_update, posts.body, posts.image_url, posts.image_alt, users.name FROM posts LEFT JOIN users ON posts.user_id = users.id ';
+$query = 'SELECT posts.id, posts.title, posts.user_id, posts.last_update, posts.body, posts.image_url, posts.image_alt, users.name FROM posts LEFT JOIN users ON posts.user_id = users.id ORDER BY posts.last_update DESC';
 
 $conn = new Database();
 $result = $conn->dbQuery($query, []);
@@ -53,17 +53,16 @@ foreach ($result as $item) {
     ));
 }
 
-// $queryUserImage = 'SELECT users.image FROM users WHERE users.id=?';
-// $userImage = $conn->dbQuery($queryUserImage, [$_SESSION['userId']]);
-// $resultUserImage = implode(" ", $userImage[0]);
-// // echo ($resultUserImage);
-
 
 foreach ($posts as $post) {
+    $queryUserImage = 'SELECT users.image FROM users WHERE users.id=?';
+    $userImage = $conn->dbQuery($queryUserImage, [$post->get('user_id')]);
+    $resultUserImage = implode(" ", $userImage[0]);
+    $resultUserImage = substr($resultUserImage, 24);
     echo <<<CARD
         <div class="card text-start mb-3">
             <div class="card-header">
-            <img src="" alt="user-image">
+            <img  class="avatar" src="{$resultUserImage}" alt="user-image">
                 {$post->get('author')}
             </div>
             <div class="card-body">

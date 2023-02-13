@@ -27,7 +27,6 @@ if (isset($_POST['submit']) && !empty($_SESSION['token'])) {
             "INSERT INTO posts(`id`,`title`,`user_id`,`last_update`,`body`,`image_url`,`image_alt`) VALUES(NULL,?,?,CURRENT_TIMESTAMP,?,NULL,NULL)",
             [$title, $_SESSION['userId'], $body]
         );
-
         header('location:all-posts.php');
     } catch (Exception $err) {
         $error = $err->getMessage();

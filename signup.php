@@ -9,6 +9,11 @@ session_start();
 $_SESSION['token'] = sha1('Aa$124$!re');
 $error = '';
 
+$conn = new Database();
+$queryChckEmail = 'SELECT users.email FROM users';
+$resultCheckEmail = $conn->dbQuery($queryChckEmail, []);
+var_dump($resultCheckEmail);
+
 if (isset($_POST['submit']) && !empty($_SESSION['token'])) {
 
     $name = filter_input(INPUT_POST, 'name', FILTER_UNSAFE_RAW);
@@ -24,6 +29,20 @@ if (isset($_POST['submit']) && !empty($_SESSION['token'])) {
         if (!$email || !preg_match($emailRegex, $email)) {
             throw new Exception('Invalid email address');
         }
+
+        // if (in_array($email, $resultCheckEmail)) {
+        //     throw new Exception('this email is already in use');
+        // }
+
+        $uppercase = preg_match('@[A-Z]@', $password);
+        $lowercase = preg_match('@[a-z]@', $password);
+        $number    = preg_match('@[0-9]@', $password);
+        $specialChars = preg_match('@[^\w]@', $password);
+
+        if (!$uppercase || !$lowercase || !$number || !$specialChars || strlen($password) < 8) {
+            throw new Exception('Password should be at least 8 characters in length and should include at least one upper case letter, one number, and one special character.');
+        }
+
 
         $image_field = $_FILES['image'];
 
@@ -47,7 +66,7 @@ if (isset($_POST['submit']) && !empty($_SESSION['token'])) {
             $upload_file = UPLOAD_DIR . date('Y.m.d.H.i.s') . '-' . basename($image_field['name']);
 
             if (move_uploaded_file($image_field['tmp_name'], $upload_file)) {
-                $conn = new Database();
+                // $conn = new Database();
                 $hash = password_hash($password, PASSWORD_DEFAULT);
 
                 $conn->dbQuery(
@@ -58,8 +77,8 @@ if (isset($_POST['submit']) && !empty($_SESSION['token'])) {
                 if ($conn->affectedCount() === 0) {
                     throw new Exception('Error. Check your fileds input...');
                 }
-
-                header('location:all-posts.php');
+                //its better safe move the user to logi page then move him to the posts page...
+                header('location:login.php');
             } else {
                 throw new Exception("Upload failed. Check permission and path of upload folder.");
             }
